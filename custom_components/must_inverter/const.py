@@ -22,8 +22,11 @@ DEFAULT_DEVICE_ID = 0x04
 MODEL_PV1800 = "pv1800"  # Base model
 MODEL_PV1900 = "pv1900"
 MODEL_PH1100 = "ph1100"
+# EP3300 protocol family (EP30-6048 Plus and clones such as the Hiren Control HPS30-6048).
+# These speak a completely different register map, on device id 10 at 9600 baud.
+MODEL_EP3300 = "ep3300"
 
-SUPPORTED_MODELS = [MODEL_PV1800, MODEL_PV1900, MODEL_PH1100]
+SUPPORTED_MODELS = [MODEL_PV1800, MODEL_PV1900, MODEL_PH1100, MODEL_EP3300]
 
 
 class Sensor(NamedTuple):
@@ -268,6 +271,51 @@ PH1100_SENSORS = [
     Sensor(25336, "TotalMainsChargeEnergyCT",        None,    "kWh",    Platform.SENSOR,               SensorDeviceClass.ENERGY,          True,  ),
     Sensor(25338, "TotalMainsDischargeEnergyCT",     None,    "kWh",    Platform.SENSOR,               SensorDeviceClass.ENERGY,          True,  ),
 ]
+
+EP3300_SENSORS = [
+    #      addr    name                              coeff    unit      platform                       device_class                       enabled
+    # Display messages
+    Sensor(30000, "InverterMachineType",             None,    None,     Platform.SENSOR,               None,                              False, ),
+    Sensor(30001, "InverterSoftwareVersion",         None,    None,     Platform.SENSOR,               None,                              False, ),
+    Sensor(30002, "InverterWorkState",               None,    None,     Platform.SENSOR,               SensorDeviceClass.ENUM,            True,  ),
+    Sensor(30003, "BattVolGrade",                    None,    "V",      Platform.SENSOR,               SensorDeviceClass.VOLTAGE,         False, ),
+    Sensor(30004, "RatedPowerW",                     None,    "W",      Platform.SENSOR,               SensorDeviceClass.POWER,           False, ),
+    Sensor(30005, "GridVoltage",                     0.1,     "V",      Platform.SENSOR,               SensorDeviceClass.VOLTAGE,         True,  ),
+    Sensor(30006, "GridFrequency",                   0.1,     "Hz",     Platform.SENSOR,               SensorDeviceClass.FREQUENCY,       True,  ),
+    Sensor(30007, "InverterVoltage",                 0.1,     "V",      Platform.SENSOR,               SensorDeviceClass.VOLTAGE,         True,  ),
+    Sensor(30008, "InverterFrequency",               0.1,     "Hz",     Platform.SENSOR,               SensorDeviceClass.FREQUENCY,       True,  ),
+    Sensor(30009, "LoadCurrent",                     0.1,     "A",      Platform.SENSOR,               SensorDeviceClass.CURRENT,         True,  ),
+    Sensor(30010, "PLoad",                           None,    "W",      Platform.SENSOR,               SensorDeviceClass.POWER,           True,  ),
+    Sensor(30012, "LoadPercent",                     None,    "%",      Platform.SENSOR,               None,                              True,  ),
+    Sensor(30014, "BatteryVoltage",                  0.1,     "V",      Platform.SENSOR,               SensorDeviceClass.VOLTAGE,         True,  ),
+    Sensor(30015, "BattCurrent",                     0.1,     "A",      Platform.SENSOR,               SensorDeviceClass.CURRENT,         True,  ),
+    Sensor(30016, "BatteryTemperature",              None,    "°C",     Platform.SENSOR,               SensorDeviceClass.TEMPERATURE,     True,  ),
+    Sensor(30017, "StateOfCharge",                   None,    "%",      Platform.SENSOR,               SensorDeviceClass.BATTERY,         True,  ),
+    Sensor(30018, "TransformerTemperature",          None,    "°C",     Platform.SENSOR,               SensorDeviceClass.TEMPERATURE,     True,  ),
+    Sensor(30020, "BuzzerState",                     None,    None,     Platform.SENSOR,               SensorDeviceClass.ENUM,            False, ),
+    Sensor(30021, "InverterErrorMessage",            None,    None,     Platform.SENSOR,               None,                              True,  ),
+    Sensor(30022, "InverterWarningMessage",          None,    None,     Platform.SENSOR,               None,                              True,  ),
+    Sensor(30023, "ChargeStage",                     None,    None,     Platform.SENSOR,               SensorDeviceClass.ENUM,            True,  ),
+    Sensor(30024, "GridChargeFlag",                  None,    None,     Platform.BINARY_SENSOR,        BinarySensorDeviceClass.BATTERY_CHARGING, True, ),
+    Sensor(30025, "GridState",                       None,    None,     Platform.SENSOR,               SensorDeviceClass.ENUM,            True,  ),
+    # Control messages
+    Sensor(31000, "GridFrequencyType",               None,    None,     Platform.SELECT,               None,                              True,  ),
+    Sensor(31001, "GridVoltageType",                 None,    "V",      Platform.SENSOR,               SensorDeviceClass.VOLTAGE,         False, ),
+    Sensor(31002, "ShutdownVoltage",                 0.1,     "V",      Platform.NUMBER,               NumberDeviceClass.VOLTAGE,         True,  ),
+    Sensor(31003, "AbsorptionVoltage",               0.1,     "V",      Platform.NUMBER,               NumberDeviceClass.VOLTAGE,         True,  ),
+    Sensor(31004, "FloatVoltage",                    0.1,     "V",      Platform.NUMBER,               NumberDeviceClass.VOLTAGE,         True,  ),
+    Sensor(31005, "BulkCurrent",                     1,       "A",      Platform.NUMBER,               NumberDeviceClass.CURRENT,         True,  ),
+    Sensor(31006, "Buzzer",                          None,    None,     Platform.SELECT,               None,                              True,  ),
+    Sensor(31007, "EnableGridCharge",                None,    None,     Platform.SELECT,               None,                              True,  ),
+    Sensor(31009, "EnableBacklight",                 None,    None,     Platform.SWITCH,               None,                              True,  ),
+    Sensor(31014, "Point2Inv",                       0.1,     "V",      Platform.NUMBER,               NumberDeviceClass.VOLTAGE,         True,  ),
+    Sensor(31015, "Point2Grid",                      0.1,     "V",      Platform.NUMBER,               NumberDeviceClass.VOLTAGE,         True,  ),
+    Sensor(31020, "PowerSavingModeEnable",           None,    None,     Platform.SWITCH,               None,                              True,  ),
+    Sensor(31021, "SearchTime",                      None,    "s",      Platform.SENSOR,               SensorDeviceClass.DURATION,        False, ),
+    Sensor(31022, "OutputSourcePriority",            None,    None,     Platform.SELECT,               None,                              True,  ),
+    Sensor(31023, "AcInputVoltageRange",             None,    None,     Platform.SELECT,               None,                              True,  ),
+    Sensor(31200, "InverterSerialNumber",            None,    None,     Platform.SENSOR,               None,                              False, ),
+]
 # fmt: on
 
 OPTIONS = {
@@ -280,6 +328,18 @@ OPTIONS = {
     "ChargerWorkstate": ["initialization", "selftest", "work", "stop"],
     "MpptState": ["stop", "mppt", "current_limiting"],
     "ChargingState": ["stop", "absorb_charge", "float_charge", "equalization_charge"],
+    # EP3300 family
+    "InverterWorkState": [
+        "self_check", "backup", "line", "stop", "charger", "soft_start", "power_off", "standby", "debug",
+    ],
+    "ChargeStage": ["constant_current", "constant_voltage", "float"],
+    "GridState": ["disconnected", "connected", "warning"],
+    "BuzzerState": ["normal", "silence"],
+    "Buzzer": ["normal", "silence"],
+    "EnableGridCharge": ["enable", "disable"],
+    "GridFrequencyType": ["50hz", "60hz"],
+    "OutputSourcePriority": ["grid", "battery"],
+    "AcInputVoltageRange": ["wide", "narrow"],
 }
 
 # fmt: off
@@ -312,6 +372,37 @@ RANGES = {
     "LoadCurrentC":                   lambda data: Range(0,     0xFFFF, 1   ),
 }
 # fmt: on
+
+# EP3300 settings are only accepted in discrete steps, and every voltage is expressed for a
+# 12V system and scaled by the battery voltage grade (48V system => 4x the 12V value).
+# fmt: off
+EP3300_RANGES = {
+    # name                                         min12  max12  step12
+    "ShutdownVoltage":   lambda data: _ep3300_voltage(data, 10.0,  11.0,  0.5 ),
+    "AbsorptionVoltage": lambda data: _ep3300_voltage(data, 13.8,  14.5,  0.1 ),
+    "FloatVoltage":      lambda data: _ep3300_voltage(data, 13.5,  13.7,  0.1 ),
+    "Point2Inv":         lambda data: _ep3300_voltage(data, 13.0,  14.0,  0.5 ),
+    "Point2Grid":        lambda data: _ep3300_voltage(data, 10.5,  12.0,  0.5 ),
+    "BulkCurrent":       lambda data: _ep3300_bulk_current(data),
+}
+# fmt: on
+
+# Highest bulk charge current the inverter accepts, keyed by battery voltage grade and rated power.
+EP3300_MAX_BULK_CURRENT = {
+    12: {1000: 30, 1500: 45, 2000: 60},
+    24: {1000: 20, 1500: 25, 2000: 30, 3000: 40, 4000: 60},
+    48: {3000: 20, 4000: 30, 5000: 35, 6000: 40},
+}
+
+
+def _ep3300_voltage(data: dict, min12: float, max12: float, step12: float) -> Range:
+    scale = data.get("BattVolGrade", 12) / 12
+    return Range(round(min12 * scale, 1), round(max12 * scale, 1), round(step12 * scale, 1))
+
+
+def _ep3300_bulk_current(data: dict) -> Range:
+    by_power = EP3300_MAX_BULK_CURRENT.get(data.get("BattVolGrade"), {})
+    return Range(10, by_power.get(data.get("RatedPowerW"), 60), 5)
 
 INVERTER_ERROR = [
     # 1
@@ -392,16 +483,77 @@ CHARGER_ERROR = [
 
 CHARGER_WARNING = ["Fan Error", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""]
 
+# EP3300 reports a single fault code instead of a bit field.
+EP3300_FAULT = {
+    0: "",
+    1: "Fan error",
+    2: "Over temperature",
+    3: "Battery voltage is too high",
+    4: "Battery voltage is too low",
+    5: "Output short circuited",
+    6: "Inverter output voltage is high",
+    7: "Overload",
+    11: "Main relay failed",
+    28: "Rated load recognition failed",
+    41: "Inverter grid voltage is low",
+    42: "Inverter grid voltage is high",
+    43: "Inverter grid under frequency",
+    44: "Inverter grid over frequency",
+    51: "Over current",
+    58: "Inverter output voltage is low",
+}
+
+EP3300_ALARM = [
+    "Inverter over temperature",
+    "Battery over temperature",
+    "Battery voltage is too high",
+    "Battery voltage is too low",
+    "Overload",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+]
+
+# Machine types reported in register 30000 by the EP3300 family.
+EP3300_MACHINE_TYPE = {0: "EP2000PRO", 2: "PV2000PRO", 3: "EP3300"}
+
 
 def get_sensors_for_model(model: str) -> list:
     """Return sensors based on inverter model.
 
     PV1800: Base sensors only
     PV1900: Base sensors + PV2 and extended battery monitoring
+    PH1100: PH1100 specific registers
+    EP3300: EP3300 family registers (EP30-6048 Plus, Hiren Control HPS30-6048, ...)
     """
     if model == MODEL_PH1100:
         return PH1100_SENSORS
 
+    if model == MODEL_EP3300:
+        return EP3300_SENSORS
+
     if model == MODEL_PV1900:
         return SENSORS_ARRAY + PV1900_SENSORS
     return SENSORS_ARRAY
+
+
+def get_serial_number_registers(model: str) -> tuple[int, int]:
+    """Return the (high, low) holding registers holding the serial number."""
+    if model == MODEL_EP3300:
+        return (31200, 31201)
+    return (20002, 20003)
+
+
+def get_ranges_for_model(model: str) -> dict:
+    """Return the number entity ranges for the given inverter model."""
+    if model == MODEL_EP3300:
+        return EP3300_RANGES
+    return RANGES

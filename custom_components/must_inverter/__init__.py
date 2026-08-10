@@ -38,6 +38,7 @@ from .const import (
     get_sensors_for_model,
     MODEL_PV1900,
     MODEL_PH1100,
+    MODEL_EP3300,
 )
 
 from .mapper import (
@@ -52,6 +53,11 @@ from .mapper import (
     convert_partArr6,
     convert_battery_status,
     convert_pv_data,
+    convert_ep3300_display,
+    convert_ep3300_control,
+    convert_ep3300_switch_points,
+    convert_ep3300_power_saving,
+    convert_ep3300_serial,
 )
 # from .utils.register_monitor import RegisterMonitor
 
@@ -309,6 +315,14 @@ class MustInverter:
                 (15104, 15119, convert_ph1100_partArr2),  # Charger Display Messages
                 (20001, 20003, convert_ph1100_partArr3),  # Inverter Control Messages
                 (25225, 25339, convert_ph1100_partArr4),  # Inverter Display Messages
+            ]
+        elif self.model == MODEL_EP3300:
+            registersAddresses = [
+                (30000, 30026, convert_ep3300_display),        # Display Messages
+                (31000, 31009, convert_ep3300_control),        # Control Messages
+                (31014, 31015, convert_ep3300_switch_points),  # Inverter/grid switch points
+                (31020, 31023, convert_ep3300_power_saving),   # Power saving and priorities
+                (31200, 31201, convert_ep3300_serial),         # Serial number
             ]
         else:
             # Base register ranges for all models

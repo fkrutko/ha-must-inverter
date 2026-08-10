@@ -29,6 +29,22 @@ power production, battery status, and more, directly from your Must solar invert
 
 This integration is tested using a Must Solar PV18-3024 VPM (aka PV1800), PV19 / PV1900 EXP Series (4/6KW), PH11 / PH1100 EU Series (AC:380V 5-12KW). However, it should work with other models that use the same communication protocol, such as the PH1800 and EP1800 series.
 
+### EP3300 series (EP30-6048 Plus, Hiren Control HPS30-6048)
+
+The EP3300 family speaks plain Modbus RTU as well, but on a completely different register map
+(30000/31000 instead of 10101/25201), and with different serial defaults. Auto detection does not
+cover it, so it has to be selected manually with these settings:
+
+| Setting   | Value               |
+| --------- | ------------------- |
+| Model     | `EP3300 Series`     |
+| Baud rate | `9600` (not 19200)  |
+| Device ID | `10` (not 4)        |
+
+Registers read: `30000-30026` (display), `31000-31009` (charger/inverter settings), `31014-31015`
+(grid/battery switch points), `31020-31023` (power saving and priorities) and `31200-31201`
+(serial number). The calibration coefficients at `31100-31109` are intentionally not exposed.
+
 ## Disclaimer
 
 This integration is not officially supported by Must Solar, I'm not affiliated with Must Solar in any way. This

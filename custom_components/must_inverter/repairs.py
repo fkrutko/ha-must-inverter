@@ -11,7 +11,7 @@ from homeassistant.helpers import device_registry as dr
 from homeassistant.helpers import entity_registry as er
 
 from .__init__ import MustInverter
-from .const import DOMAIN
+from .const import DOMAIN, get_serial_number_registers
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -61,8 +61,10 @@ class NoSerialNumber(RepairsFlow):
                 except Exception as err:
                     _LOGGER.error("failed to update entity id: %s", err)
 
-            await device.write_modbus_data(20002, upper)
-            await device.write_modbus_data(20003, lower)
+            upper_register, lower_register = get_serial_number_registers(device.model)
+
+            await device.write_modbus_data(upper_register, upper)
+            await device.write_modbus_data(lower_register, lower)
 
             self._hass.config_entries.async_schedule_reload(entry_id)
 

@@ -1,7 +1,15 @@
 import datetime
 import logging
 
-from .const import INVERTER_ERROR, INVERTER_WARNING, CHARGER_ERROR, CHARGER_WARNING
+from .const import (
+    INVERTER_ERROR,
+    INVERTER_WARNING,
+    CHARGER_ERROR,
+    CHARGER_WARNING,
+    EP3300_ALARM,
+    EP3300_FAULT,
+    EP3300_MACHINE_TYPE,
+)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -271,6 +279,107 @@ def convert_pv_data(registers):
             result["PV2ChargerPower"] = registers[16208]
     except Exception as e:
         _LOGGER.debug("PV data not available: %s", e)
+    return result
+
+
+def fault_code(address, registers, fault_codes):
+    code = registers[address]
+    if code == 0:
+        return "No errors"
+    return fault_codes.get(code) or f"Unknown fault code {code}"
+
+
+def convert_ep3300_display(registers):
+    if registers is None:
+        return None
+
+    # fmt: off
+    result = {}
+    result["InverterMachineType"] =      EP3300_MACHINE_TYPE.get(uint16(30000, registers), "Unknown")
+    result["InverterSoftwareVersion"] =  uint16(30001, registers)
+    result["InverterWorkState"] =        int16(30002, registers)
+    result["BattVolGrade"] =             int16(30003, registers)
+    result["RatedPowerW"] =              int16(30004, registers)
+    result["GridVoltage"] =              int16(30005, registers)
+    result["GridFrequency"] =            int16(30006, registers)
+    result["InverterVoltage"] =          int16(30007, registers)
+    result["InverterFrequency"] =        int16(30008, registers)
+    result["LoadCurrent"] =              int16(30009, registers)
+    result["PLoad"] =                    int16(30010, registers)
+    result["LoadPercent"] =              int16(30012, registers)
+    result["BatteryVoltage"] =           int16(30014, registers)
+    result["BattCurrent"] =              int16(30015, registers)
+    result["BatteryTemperature"] =       int16(30016, registers)
+    result["StateOfCharge"] =            int16(30017, registers)
+    result["TransformerTemperature"] =   int16(30018, registers)
+    result["BuzzerState"] =              int16(30020, registers)
+    result["InverterErrorMessage"] =     fault_code(30021, registers, EP3300_FAULT)
+    result["InverterWarningMessage"] =   error_bits(30022, registers, EP3300_ALARM)
+    result["ChargeStage"] =              int16(30023, registers)
+    result["GridChargeFlag"] =           int16(30024, registers)
+    result["GridState"] =                int16(30025, registers)
+    # fmt: on
+
+    return result
+
+
+def convert_ep3300_control(registers):
+    if registers is None:
+        return None
+
+    # fmt: off
+    result = {}
+    result["GridFrequencyType"] =    int16(31000, registers)
+    result["GridVoltageType"] =      int16(31001, registers)
+    result["ShutdownVoltage"] =      int16(31002, registers)
+    result["AbsorptionVoltage"] =    int16(31003, registers)
+    result["FloatVoltage"] =         int16(31004, registers)
+    result["BulkCurrent"] =          int16(31005, registers)
+    result["Buzzer"] =               int16(31006, registers)
+    result["EnableGridCharge"] =     int16(31007, registers)
+    result["EnableBacklight"] =      int16(31009, registers)
+    # fmt: on
+
+    return result
+
+
+def convert_ep3300_switch_points(registers):
+    if registers is None:
+        return None
+
+    # fmt: off
+    result = {}
+    result["Point2Inv"] =   int16(31014, registers)
+    result["Point2Grid"] =  int16(31015, registers)
+    # fmt: on
+
+    return result
+
+
+def convert_ep3300_power_saving(registers):
+    if registers is None:
+        return None
+
+    # fmt: off
+    result = {}
+    result["PowerSavingModeEnable"] =  int16(31020, registers)
+    result["SearchTime"] =             int16(31021, registers)
+    result["OutputSourcePriority"] =   int16(31022, registers)
+    result["AcInputVoltageRange"] =    int16(31023, registers)
+    # fmt: on
+
+    return result
+
+
+def convert_ep3300_serial(registers):
+    if registers is None:
+        return None
+
+    # fmt: off
+    result = {}
+    result["InverterSerialNumber"] = serial(31200, registers)
+    # fmt: on
+
     return result
 
 

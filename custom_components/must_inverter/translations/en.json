@@ -13,7 +13,7 @@
         },
         "data_description": {
           "name": "Leave empty to use the inverter model as name.",
-          "model": "Leave in Auto Detect unless you're not seeing data that should be available for your device.",
+          "model": "Leave in Auto Detect unless you're not seeing data that should be available for your device. EP3300 series devices (EP30-6048 Plus, Hiren Control HPS30-6048) must be selected manually, and need a baud rate of 9600 and device ID 10.",
           "scan_interval": "The interval in seconds to poll the inverter for data.",
           "mode": "The connection type to use to communicate with the inverter, usually via the included USB cable or via TCP/UDP for wireless connections."
         }
@@ -79,7 +79,7 @@
         },
         "data_description": {
           "name": "Leave empty to use the inverter model as name.",
-          "model": "Leave in Auto Detect unless you're not seeing data that should be available for your device.",
+          "model": "Leave in Auto Detect unless you're not seeing data that should be available for your device. EP3300 series devices (EP30-6048 Plus, Hiren Control HPS30-6048) must be selected manually, and need a baud rate of 9600 and device ID 10.",
           "scan_interval": "The interval in seconds to poll the inverter for data.",
           "mode": "The connection type to use to communicate with the inverter, usually via the included USB cable or via TCP/UDP for wireless connections."
         }
@@ -161,7 +161,8 @@
         "autodetect": "Auto Detect",
         "pv1800": "PV1800 Series",
         "pv1900": "PV1900 Series",
-        "ph1100": "PH1100 Series"
+        "ph1100": "PH1100 Series",
+        "ep3300": "EP3300 Series (EP30-6048 Plus, Hiren Control HPS30-6048)"
       }
     },
     "mode": {
@@ -182,7 +183,8 @@
       "loadrelaystate": { "name": "Relay Load" },
       "n_linerelaystate": { "name": "Relay N Line" },
       "dcrelaystate": { "name": "Relay DC" },
-      "earthrelaystate": { "name": "Relay Earth" }
+      "earthrelaystate": { "name": "Relay Earth" },
+      "gridchargeflag": { "name": "Grid Charging" }
     },
     "button": {
       "removetheaccumulateddata": { "name": "Remove Accumulated Data" },
@@ -213,7 +215,11 @@
       "batterystopchargingvoltage": { "name": "Battery Stop Charging Voltage" },
       "gridmaxchargercurrentset": { "name": "Grid Max Charger Current" },
       "inverterbatterylowvoltage": { "name": "Battery Low Voltage (Inverter)" },
-      "maxcombinechargercurrent": { "name": "Max Combine Charger Current" }
+      "maxcombinechargercurrent": { "name": "Max Combine Charger Current" },
+      "shutdownvoltage": { "name": "Shutdown Voltage" },
+      "bulkcurrent": { "name": "Bulk Charge Current" },
+      "point2inv": { "name": "Switch To Battery Voltage" },
+      "point2grid": { "name": "Switch To Grid Voltage" }
     },
     "select": {
       "batterytype": {
@@ -258,6 +264,41 @@
           "solar_first": "Solar First",
           "solar_and_utility": "Solar and Utility",
           "only_solar": "Only Solar"
+        }
+      },
+      "gridfrequencytype": {
+        "name": "Grid Frequency Type",
+        "state": {
+          "50hz": "50 Hz",
+          "60hz": "60 Hz"
+        }
+      },
+      "buzzer": {
+        "name": "Buzzer",
+        "state": {
+          "normal": "Normal",
+          "silence": "Silence"
+        }
+      },
+      "enablegridcharge": {
+        "name": "Grid Charge",
+        "state": {
+          "enable": "Enabled",
+          "disable": "Disabled"
+        }
+      },
+      "outputsourcepriority": {
+        "name": "Output Source Priority",
+        "state": {
+          "grid": "Grid",
+          "battery": "Battery"
+        }
+      },
+      "acinputvoltagerange": {
+        "name": "AC Input Voltage Range",
+        "state": {
+          "wide": "Wide",
+          "narrow": "Narrow"
         }
       }
     },
@@ -422,7 +463,46 @@
       "totalgridchargeenergy": { "name": "Total Grid Charge Energy" },
       "totalgriddischargeenergy": { "name": "Total Grid Discharge Energy" },
       "totalmainschargeenergyct": { "name": "Total Mains Charge Energy (CT)" },
-      "totalmainsdischargeenergyct": { "name": "Total Mains Discharge Energy (CT)" }
+      "totalmainsdischargeenergyct": { "name": "Total Mains Discharge Energy (CT)" },
+      "inverterworkstate": {
+        "name": "Work State",
+        "state": {
+          "self_check": "Self-Check",
+          "backup": "Backup",
+          "line": "Line",
+          "stop": "Stop",
+          "charger": "Charger",
+          "soft_start": "Soft Start",
+          "power_off": "Power Off",
+          "standby": "Standby",
+          "debug": "Debug"
+        }
+      },
+      "chargestage": {
+        "name": "Charge Stage",
+        "state": {
+          "constant_current": "Constant Current",
+          "constant_voltage": "Constant Voltage",
+          "float": "Float"
+        }
+      },
+      "gridstate": {
+        "name": "Grid State",
+        "state": {
+          "disconnected": "Disconnected",
+          "connected": "Connected",
+          "warning": "Warning"
+        }
+      },
+      "buzzerstate": {
+        "name": "Buzzer State",
+        "state": {
+          "normal": "Normal",
+          "silence": "Silence"
+        }
+      },
+      "gridvoltagetype": { "name": "Grid Voltage Type" },
+      "searchtime": { "name": "Power Saving Search Time" }
     },
     "switch": {
       "chargerworkenable": { "name": "Charger" },
@@ -442,7 +522,9 @@
       "gridbuzz": { "name": "Grid Buzz" },
       "buzz": { "name": "Buzz" },
       "lcdlight": { "name": "LCD Light" },
-      "recordfault": { "name": "Record Fault" }
+      "recordfault": { "name": "Record Fault" },
+      "enablebacklight": { "name": "LCD Backlight" },
+      "powersavingmodeenable": { "name": "Power Saving Mode" }
     },
     "time": {
       "batteryequalizationstarttime": { "name": "Battery Equalization Start Time" },

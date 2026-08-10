@@ -6,7 +6,7 @@ from homeassistant.components.switch import SwitchEntity
 from homeassistant.const import Platform
 from homeassistant.core import callback
 
-from .const import DOMAIN, MODEL_PH1100, Sensor
+from .const import DOMAIN, MODEL_PH1100, MODEL_EP3300, Sensor
 from .__init__ import MustInverter
 
 _LOGGER = logging.getLogger(__name__)
@@ -29,7 +29,8 @@ async def async_setup_entry(hass, entry, async_add_entities):
     sensors = inverter_data["sensors"]
     entities = []
 
-    if inverter.model == MODEL_PH1100:
+    # The SystemSetting bit field only exists on the PV1800 register map.
+    if inverter.model in (MODEL_PH1100, MODEL_EP3300):
         settings = []
     else:
         # fmt: off

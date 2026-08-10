@@ -160,7 +160,8 @@
       "options": {
         "autodetect": "Detecção automática",
         "pv1800": "Série PV1800",
-        "pv1900": "Série PV1900"
+        "pv1900": "Série PV1900",
+        "ep3300": "Série EP3300 (EP30-6048 Plus, Hiren Control HPS30-6048)"
       }
     },
     "mode": {

@@ -5,7 +5,7 @@ from homeassistant.components.number import NumberEntity
 from homeassistant.core import callback
 from homeassistant.const import Platform
 
-from .const import DOMAIN, RANGES, Sensor
+from .const import DOMAIN, Sensor, get_ranges_for_model
 from .__init__ import MustInverter
 
 _LOGGER = logging.getLogger(__name__)
@@ -41,8 +41,10 @@ class MustInverterNumber(NumberEntity):
         self._attr_device_class = sensor_info.device_class
         self._attr_entity_registry_enabled_default = sensor_info.enabled
 
-        if self._key in RANGES:
-            range = RANGES.get(self._key)(self._inverter.data)
+        ranges = get_ranges_for_model(inverter.model)
+
+        if self._key in ranges:
+            range = ranges.get(self._key)(self._inverter.data)
 
             self._attr_native_min_value = range.min
             self._attr_native_max_value = range.max
