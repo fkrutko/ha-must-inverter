@@ -45,6 +45,10 @@ Registers read: `30000-30026` (display), `31000-31009` (charger/inverter setting
 (grid/battery switch points), `31020-31023` (power saving and priorities) and `31200-31201`
 (serial number). The calibration coefficients at `31100-31109` are intentionally not exposed.
 
+Writes on this family use FC16 (write multiple registers), which is the function code the vendor
+tool uses for every EP3300 write; the firmware does not answer FC06. If a write is not acknowledged
+the integration retries it once with the other function code, so both firmware variants work.
+
 ## Disclaimer
 
 This integration is not officially supported by Must Solar, I'm not affiliated with Must Solar in any way. This

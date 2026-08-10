@@ -11,6 +11,7 @@ from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers import issue_registry as ir
 from homeassistant.helpers.event import async_track_time_interval
 from pymodbus.client import AsyncModbusSerialClient, AsyncModbusTcpClient, AsyncModbusUdpClient
+from pymodbus.exceptions import ModbusIOException
 
 from homeassistant.const import (
     CONF_NAME,
@@ -279,12 +280,36 @@ class MustInverter:
             )
         return result
 
+    async def _write_register(self, address, value, use_fc16):
+        """Write a single register using either FC16 (write multiple) or FC06 (write single)."""
+        if use_fc16:
+            return await self._client.write_registers(address=address, values=[value], device_id=self._device_id)
+        return await self._client.write_register(address=address, value=value, device_id=self._device_id)
+
     async def write_modbus_data(self, address, value):
         await self._check_and_reopen()
 
-        _LOGGER.debug("writing modbus data: %s %s", address, value)
+        # The EP3300 firmware ignores FC06 and only answers FC16, which is the only function
+        # code the vendor tool ever uses for this family. Other models answer FC06.
+        use_fc16 = self.model == MODEL_EP3300
+
+        _LOGGER.debug("writing modbus data: %s %s (fc%s)", address, value, "16" if use_fc16 else "06")
         async with self._lock:
-            response = await self._client.write_register(address=address, value=value, device_id=self._device_id)
+            if use_fc16:
+                # The inverter needs a moment between the previous read and a write, the vendor
+                # tool waits 200ms after every read before sending anything else.
+                await asyncio.sleep(0.2)
+
+            try:
+                response = await self._write_register(address, value, use_fc16)
+            except ModbusIOException as ex:
+                _LOGGER.debug("no response writing modbus data with fc%s: %s", "16" if use_fc16 else "06", ex)
+                response = None
+
+            if response is None or response.isError():
+                # Fall back to the other function code, firmware support varies between models.
+                _LOGGER.debug("retrying write of %s with fc%s", address, "06" if use_fc16 else "16")
+                response = await self._write_register(address, value, not use_fc16)
 
         if response.isError():
             _LOGGER.error("error writing modbus data: %s", response)
