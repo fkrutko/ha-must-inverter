@@ -188,7 +188,9 @@
     },
     "button": {
       "removetheaccumulateddata": { "name": "Remove Accumulated Data" },
-      "inverterremovetheaccumulateddata": { "name": "Remove Accumulated Data (Inverter)" }
+      "inverterremovetheaccumulateddata": { "name": "Remove Accumulated Data (Inverter)" },
+      "restorefactorysettings": { "name": "Restore Factory Settings" },
+      "remotereset": { "name": "Remote Reset" }
     },
     "number": {
       "floatvoltage": { "name": "Float Voltage" },
@@ -299,6 +301,24 @@
         "state": {
           "wide": "Wide",
           "narrow": "Narrow"
+        }
+      },
+      "gridvoltagetype": {
+        "name": "Output Voltage",
+        "state": {
+          "110": "110 V",
+          "115": "115 V",
+          "120": "120 V",
+          "220": "220 V",
+          "230": "230 V",
+          "240": "240 V"
+        }
+      },
+      "searchtime": {
+        "name": "Power Saving Search Time",
+        "state": {
+          "5": "5 s",
+          "30": "30 s"
         }
       }
     },
@@ -500,9 +520,7 @@
           "normal": "Normal",
           "silence": "Silence"
         }
-      },
-      "gridvoltagetype": { "name": "Grid Voltage Type" },
-      "searchtime": { "name": "Power Saving Search Time" }
+      }
     },
     "switch": {
       "chargerworkenable": { "name": "Charger" },

@@ -46,6 +46,11 @@ def serial(address, registers):
     return registers[address] << 16 | registers[address + 1]
 
 
+def serial_decimal(address, registers):
+    """Two registers concatenated as zero padded decimals, the format the vendor tool shows."""
+    return f"{registers[address]:05d}{registers[address + 1]:05d}"
+
+
 def serial_string(address, registers):
     return f"{registers[address]:05d}{registers[address + 1]:05d}{registers[address + 2]:05d}"
 
@@ -289,6 +294,16 @@ def fault_code(address, registers, fault_codes):
     return fault_codes.get(code) or f"Unknown fault code {code}"
 
 
+def ep3300_version(address, registers):
+    """Format the firmware version the same way the vendor tool does."""
+    value = str(registers[address])
+
+    if len(value) != 5:
+        return None
+
+    return f"166-00{value[:3]}-{value[3:]}"
+
+
 def convert_ep3300_display(registers):
     if registers is None:
         return None
@@ -296,7 +311,7 @@ def convert_ep3300_display(registers):
     # fmt: off
     result = {}
     result["InverterMachineType"] =      EP3300_MACHINE_TYPE.get(uint16(30000, registers), "Unknown")
-    result["InverterSoftwareVersion"] =  uint16(30001, registers)
+    result["InverterSoftwareVersion"] =  ep3300_version(30001, registers)
     result["InverterWorkState"] =        int16(30002, registers)
     result["BattVolGrade"] =             int16(30003, registers)
     result["RatedPowerW"] =              int16(30004, registers)
@@ -377,7 +392,7 @@ def convert_ep3300_serial(registers):
 
     # fmt: off
     result = {}
-    result["InverterSerialNumber"] = serial(31200, registers)
+    result["InverterSerialNumber"] = serial_decimal(31200, registers)
     # fmt: on
 
     return result

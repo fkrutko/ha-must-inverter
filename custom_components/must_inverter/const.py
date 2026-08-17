@@ -300,7 +300,7 @@ EP3300_SENSORS = [
     Sensor(30025, "GridState",                       None,    None,     Platform.SENSOR,               SensorDeviceClass.ENUM,            True,  ),
     # Control messages
     Sensor(31000, "GridFrequencyType",               None,    None,     Platform.SELECT,               None,                              True,  ),
-    Sensor(31001, "GridVoltageType",                 None,    "V",      Platform.SENSOR,               SensorDeviceClass.VOLTAGE,         False, ),
+    Sensor(31001, "GridVoltageType",                 None,    None,     Platform.SELECT,               None,                              True,  ),
     Sensor(31002, "ShutdownVoltage",                 0.1,     "V",      Platform.NUMBER,               NumberDeviceClass.VOLTAGE,         True,  ),
     Sensor(31003, "AbsorptionVoltage",               0.1,     "V",      Platform.NUMBER,               NumberDeviceClass.VOLTAGE,         True,  ),
     Sensor(31004, "FloatVoltage",                    0.1,     "V",      Platform.NUMBER,               NumberDeviceClass.VOLTAGE,         True,  ),
@@ -311,10 +311,13 @@ EP3300_SENSORS = [
     Sensor(31014, "Point2Inv",                       0.1,     "V",      Platform.NUMBER,               NumberDeviceClass.VOLTAGE,         True,  ),
     Sensor(31015, "Point2Grid",                      0.1,     "V",      Platform.NUMBER,               NumberDeviceClass.VOLTAGE,         True,  ),
     Sensor(31020, "PowerSavingModeEnable",           None,    None,     Platform.SWITCH,               None,                              True,  ),
-    Sensor(31021, "SearchTime",                      None,    "s",      Platform.SENSOR,               SensorDeviceClass.DURATION,        False, ),
+    Sensor(31021, "SearchTime",                      None,    None,     Platform.SELECT,               None,                              True,  ),
     Sensor(31022, "OutputSourcePriority",            None,    None,     Platform.SELECT,               None,                              True,  ),
     Sensor(31023, "AcInputVoltageRange",             None,    None,     Platform.SELECT,               None,                              True,  ),
     Sensor(31200, "InverterSerialNumber",            None,    None,     Platform.SENSOR,               None,                              False, ),
+    # Command registers, write-only, they are not part of any read range.
+    Sensor(32000, "RestoreFactorySettings",          None,    None,     Platform.BUTTON,               None,                              False, ),
+    Sensor(32001, "RemoteReset",                     None,    None,     Platform.BUTTON,               None,                              False, ),
 ]
 # fmt: on
 
@@ -340,6 +343,14 @@ OPTIONS = {
     "GridFrequencyType": ["50hz", "60hz"],
     "OutputSourcePriority": ["grid", "battery"],
     "AcInputVoltageRange": ["wide", "narrow"],
+}
+
+# Selects where the register holds the setting itself instead of an index into OPTIONS.
+# The inverter only accepts these exact values, anything else is silently ignored.
+VALUE_OPTIONS = {
+    # EP3300 family
+    "GridVoltageType": [110, 115, 120, 220, 230, 240],
+    "SearchTime": [5, 30],
 }
 
 # fmt: off
@@ -550,6 +561,22 @@ def get_serial_number_registers(model: str) -> tuple[int, int]:
     if model == MODEL_EP3300:
         return (31200, 31201)
     return (20002, 20003)
+
+
+def format_serial_number(model: str, value: int) -> str | int:
+    """Return the serial number the way the model reports it back after writing `value`.
+
+    The EP3300 family concatenates both registers as zero padded decimals instead of
+    decoding them as a single 32 bit integer.
+    """
+    if model == MODEL_EP3300:
+        return f"{(value >> 16) & 0xFFFF:05d}{value & 0xFFFF:05d}"
+    return value
+
+
+# A serial number of all zeroes or all ones means the inverter has none programmed,
+# in both the integer and the EP3300 decimal encoding.
+INVALID_SERIAL_NUMBERS = {0, 0xFFFFFFFF, "0000000000", "6553565535"}
 
 
 def get_ranges_for_model(model: str) -> dict:

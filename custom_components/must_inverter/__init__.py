@@ -8,6 +8,8 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.exceptions import ConfigEntryNotReady
+from homeassistant.helpers import device_registry as dr
+from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers import issue_registry as ir
 from homeassistant.helpers.event import async_track_time_interval
 from pymodbus.client import AsyncModbusSerialClient, AsyncModbusTcpClient, AsyncModbusUdpClient
@@ -36,7 +38,9 @@ from .const import (
     CONF_DEVICE_ID,
     DEFAULT_SCAN_INTERVAL,
     DEFAULT_DEVICE_ID,
+    INVALID_SERIAL_NUMBERS,
     get_sensors_for_model,
+    get_serial_number_registers,
     MODEL_PV1900,
     MODEL_PH1100,
     MODEL_EP3300,
@@ -101,6 +105,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         sensors = get_sensors_for_model(model)
         _LOGGER.debug("Setting up Must Inverter with model: %s", model)
 
+        _async_migrate_ep3300_serial_number(hass, entry, inverter)
+
         # Store sensors to be used by platforms
         hass.data[DOMAIN][entry.entry_id] = {"inverter": inverter, "sensors": sensors}
 
@@ -132,6 +138,55 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     except Exception as ex:
         _LOGGER.exception("Error setting up modbus device", exc_info=True)
         raise ConfigEntryNotReady("Unknown error connecting to modbus device") from ex
+
+
+@callback
+def _async_migrate_ep3300_serial_number(hass: HomeAssistant, entry: ConfigEntry, inverter: "MustInverter") -> None:
+    """Move EP3300 registry entries over to the serial number format of the vendor tool.
+
+    The serial number used to be decoded as a single 32 bit integer, but the inverter
+    reports it as both registers concatenated as zero padded decimals. It is part of
+    every unique id, so the existing entries are renamed instead of being orphaned.
+    """
+    if inverter.model != MODEL_EP3300:
+        return
+
+    high, low = get_serial_number_registers(MODEL_EP3300)
+
+    if high not in inverter.registers or low not in inverter.registers:
+        return
+
+    old_serial = inverter.registers[high] << 16 | inverter.registers[low]
+    new_serial = inverter.data["InverterSerialNumber"]
+
+    if str(old_serial) == str(new_serial):
+        return
+
+    device_registry = dr.async_get(hass)
+    device = device_registry.async_get_device({(DOMAIN, old_serial)}) or device_registry.async_get_device(
+        {(DOMAIN, str(old_serial))}
+    )
+
+    if device is not None:
+        _LOGGER.info("migrating device identifier from %s to %s", old_serial, new_serial)
+        device_registry.async_update_device(device.id, new_identifiers={(DOMAIN, new_serial)})
+
+    entity_registry = er.async_get(hass)
+
+    for entity in er.async_entries_for_config_entry(entity_registry, entry.entry_id):
+        prefix = f"{old_serial}_"
+
+        if not entity.unique_id.startswith(prefix):
+            continue
+
+        new_unique_id = f"{new_serial}_{entity.unique_id[len(prefix):]}"
+
+        try:
+            _LOGGER.info("migrating unique id from %s to %s", entity.unique_id, new_unique_id)
+            entity_registry.async_update_entity(entity.entity_id, new_unique_id=new_unique_id)
+        except ValueError:
+            # An entity already claims the new id, the old one is a leftover
+            _LOGGER.warning("could not migrate %s, %s is already taken", entity.unique_id, new_unique_id)
 
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
@@ -431,7 +486,7 @@ class MustInverter:
         self._reading = False
         # _LOGGER.debug("Data: %s", self.data)
 
-        if self.data["InverterSerialNumber"] == 0xFFFFFFFF or self.data["InverterSerialNumber"] == 0:
+        if self.data["InverterSerialNumber"] in INVALID_SERIAL_NUMBERS:
             ir.async_create_issue(
                 self._hass,
                 DOMAIN,

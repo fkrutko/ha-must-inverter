@@ -74,7 +74,13 @@
             "energyusemode": { "default": "mdi:lightning-bolt" },
             "gridprotectstandard": { "default": "mdi:lightning-bolt" },
             "solaruseaim": { "default": "mdi:lightning-bolt" },
-            "chargersourcepriority": { "default": "mdi:battery-charging-high" }
+            "chargersourcepriority": { "default": "mdi:battery-charging-high" },
+            "gridvoltagetype": { "default": "mdi:sine-wave" },
+            "searchtime": { "default": "mdi:leaf" }
+        },
+        "button": {
+            "restorefactorysettings": { "default": "mdi:factory" },
+            "remotereset": { "default": "mdi:restart" }
         },
         "sensor": {
             "absorbchargercurrent": { "default": "mdi:current-dc" },

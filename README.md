@@ -43,11 +43,26 @@ cover it, so it has to be selected manually with these settings:
 
 Registers read: `30000-30026` (display), `31000-31009` (charger/inverter settings), `31014-31015`
 (grid/battery switch points), `31020-31023` (power saving and priorities) and `31200-31201`
-(serial number). The calibration coefficients at `31100-31109` are intentionally not exposed.
+(serial number). The calibration coefficients at `31100-31104` and `31108` are intentionally not
+exposed, writing them cannot be undone.
 
-Writes on this family use FC16 (write multiple registers), which is the function code the vendor
-tool uses for every EP3300 write; the firmware does not answer FC06. If a write is not acknowledged
-the integration retries it once with the other function code, so both firmware variants work.
+Every setting the vendor tool can change is exposed: output voltage (`31001`), grid frequency,
+shutdown/absorption/float voltages, bulk current, buzzer, grid charge, backlight, the two switch
+points, power saving mode, search time (`31021`), output source priority and AC input voltage
+range. The `31008`, `31010-31013` and `31016-31019` gaps are not registers on this family.
+
+Output voltage and search time only accept a fixed set of values (`110/115/120/220/230/240 V` and
+`5/30 s`), so they show up as dropdowns rather than free numbers.
+
+The command registers `32000` (restore factory settings) and `32001` (remote reset) are exposed as
+buttons, disabled by default.
+
+Writes on this family use FC16 (write multiple registers). If a write is not acknowledged the
+integration retries it once with FC06, so both firmware variants work.
+
+The serial number is `31200` and `31201` concatenated as zero padded decimals, the way the vendor
+tool shows it, rather than a single 32 bit integer. Devices set up before this changed are migrated
+to the new identifier on the next restart, so entity history is kept.
 
 ## Disclaimer
 
