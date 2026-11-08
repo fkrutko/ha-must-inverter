@@ -63,6 +63,22 @@
           "reconnect_delay": "Minimum delay before reconnecting. Set to 0 to disable reconnecting.",
           "reconnect_delay_max": "Maximum delay before reconnecting. Pymodbus doubles the delay after each unsuccessful connection attempt."
         }
+      },
+      "smart_discharge": {
+        "title": "Smart battery discharge",
+        "description": "Settings for the Smart Discharge switch. When the switch is on, the forecast of the next solar charging day (the day of the next sunrise) decides the Battery Stop Discharging Voltage: on a good day the battery may discharge down to the discharge voltage, otherwise it is held at the hold voltage. Without a forecast the battery is held.",
+        "data": {
+          "smart_weather_entity": "Weather forecast entity",
+          "smart_discharge_voltage": "Discharge voltage (good forecast)",
+          "smart_hold_voltage": "Hold voltage (bad forecast)",
+          "smart_good_conditions": "Good forecast conditions"
+        },
+        "data_description": {
+          "smart_weather_entity": "Weather entity providing a daily (or hourly) forecast, for example Met.no.",
+          "smart_discharge_voltage": "Battery Stop Discharging Voltage used when the next day is good, the battery discharges down to this voltage.",
+          "smart_hold_voltage": "Battery Stop Discharging Voltage used when the next day is bad, set it high enough that the battery does not discharge.",
+          "smart_good_conditions": "Forecast conditions that count as a good charging day."
+        }
       }
     }
   },
@@ -129,6 +145,22 @@
           "reconnect_delay": "Minimum delay before reconnecting. Set to 0 to disable reconnecting.",
           "reconnect_delay_max": "Maximum delay before reconnecting. Pymodbus doubles the delay after each unsuccessful connection attempt."
         }
+      },
+      "smart_discharge": {
+        "title": "Smart battery discharge",
+        "description": "Settings for the Smart Discharge switch. When the switch is on, the forecast of the next solar charging day (the day of the next sunrise) decides the Battery Stop Discharging Voltage: on a good day the battery may discharge down to the discharge voltage, otherwise it is held at the hold voltage. Without a forecast the battery is held.",
+        "data": {
+          "smart_weather_entity": "Weather forecast entity",
+          "smart_discharge_voltage": "Discharge voltage (good forecast)",
+          "smart_hold_voltage": "Hold voltage (bad forecast)",
+          "smart_good_conditions": "Good forecast conditions"
+        },
+        "data_description": {
+          "smart_weather_entity": "Weather entity providing a daily (or hourly) forecast, for example Met.no.",
+          "smart_discharge_voltage": "Battery Stop Discharging Voltage used when the next day is good, the battery discharges down to this voltage.",
+          "smart_hold_voltage": "Battery Stop Discharging Voltage used when the next day is bad, set it high enough that the battery does not discharge.",
+          "smart_good_conditions": "Forecast conditions that count as a good charging day."
+        }
       }
     }
   },
@@ -156,6 +188,22 @@
     }
   },
   "selector": {
+    "smart_good_conditions": { "options": {
+      "sunny": "Sunny",
+      "partlycloudy": "Partly cloudy",
+      "cloudy": "Cloudy",
+      "windy": "Windy",
+      "windy-variant": "Windy and cloudy",
+      "fog": "Fog",
+      "rainy": "Rainy",
+      "pouring": "Pouring",
+      "lightning": "Lightning",
+      "lightning-rainy": "Lightning and rain",
+      "snowy": "Snowy",
+      "snowy-rainy": "Snow and rain",
+      "hail": "Hail",
+      "exceptional": "Exceptional"
+    } },
     "model": {
       "options": {
         "autodetect": "Auto Detect",
@@ -323,6 +371,34 @@
       }
     },
     "sensor": {
+      "smartdischargedecision": {
+        "name": "Smart Discharge Decision",
+        "state": {
+          "discharge": "Discharge",
+          "hold": "Hold",
+          "disabled": "Disabled"
+        }
+      },
+      "smartdischargeforecast": {
+        "name": "Smart Discharge Forecast",
+        "state": {
+          "sunny": "Sunny",
+          "partlycloudy": "Partly cloudy",
+          "cloudy": "Cloudy",
+          "windy": "Windy",
+          "windy-variant": "Windy and cloudy",
+          "fog": "Fog",
+          "rainy": "Rainy",
+          "pouring": "Pouring",
+          "lightning": "Lightning",
+          "lightning-rainy": "Lightning and rain",
+          "snowy": "Snowy",
+          "snowy-rainy": "Snow and rain",
+          "hail": "Hail",
+          "exceptional": "Exceptional",
+          "clear-night": "Clear night"
+        }
+      },
       "absorbvoltage": { "name": "Absorb Voltage" },
       "batteryhighvoltage": { "name": "Battery High Voltage" },
       "absorbchargercurrent": { "name": "Absorb Charger Current" },
@@ -523,6 +599,7 @@
       }
     },
     "switch": {
+      "smartdischarge": { "name": "Smart Discharge" },
       "chargerworkenable": { "name": "Charger" },
       "batteryequalizationenable": { "name": "Battery Equalization" },
       "batteryequalizationimmediately": { "name": "Battery Equalization Immediately" },

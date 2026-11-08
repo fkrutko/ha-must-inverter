@@ -63,6 +63,22 @@
           "reconnect_delay": "Delay mínimo antes de reconectar. Defina como 0 para desativar a reconexão.",
           "reconnect_delay_max": "Delay máximo antes de reconectar. O Pymodbus dobra o delay após cada tentativa de conexão mal-sucedida."
         }
+      },
+      "smart_discharge": {
+        "title": "Descarga inteligente da bateria",
+        "description": "Configurações do interruptor Descarga Inteligente. Com o interruptor ligado, a previsão do próximo dia de carga solar (o dia do próximo nascer do sol) define a Tensão de parada de descarga da bateria: em um dia bom a bateria pode descarregar até a tensão de descarga, caso contrário é mantida na tensão de retenção. Sem previsão a bateria é mantida.",
+        "data": {
+          "smart_weather_entity": "Entidade de previsão do tempo",
+          "smart_discharge_voltage": "Tensão de descarga (previsão boa)",
+          "smart_hold_voltage": "Tensão de retenção (previsão ruim)",
+          "smart_good_conditions": "Condições de previsão boas"
+        },
+        "data_description": {
+          "smart_weather_entity": "Entidade de clima com previsão diária (ou horária), por exemplo Met.no.",
+          "smart_discharge_voltage": "Tensão de parada de descarga usada quando o próximo dia é bom.",
+          "smart_hold_voltage": "Tensão de parada de descarga usada quando o próximo dia é ruim, alta o suficiente para a bateria não descarregar.",
+          "smart_good_conditions": "Condições de previsão consideradas um bom dia de carga."
+        }
       }
     }
   },
@@ -129,6 +145,22 @@
           "reconnect_delay": "Delay mínimo antes de reconectar. Defina como 0 para desativar a reconexão.",
           "reconnect_delay_max": "Delay máximo antes de reconectar. O Pymodbus dobra o delay após cada tentativa de conexão mal-sucedida."
         }
+      },
+      "smart_discharge": {
+        "title": "Descarga inteligente da bateria",
+        "description": "Configurações do interruptor Descarga Inteligente. Com o interruptor ligado, a previsão do próximo dia de carga solar (o dia do próximo nascer do sol) define a Tensão de parada de descarga da bateria: em um dia bom a bateria pode descarregar até a tensão de descarga, caso contrário é mantida na tensão de retenção. Sem previsão a bateria é mantida.",
+        "data": {
+          "smart_weather_entity": "Entidade de previsão do tempo",
+          "smart_discharge_voltage": "Tensão de descarga (previsão boa)",
+          "smart_hold_voltage": "Tensão de retenção (previsão ruim)",
+          "smart_good_conditions": "Condições de previsão boas"
+        },
+        "data_description": {
+          "smart_weather_entity": "Entidade de clima com previsão diária (ou horária), por exemplo Met.no.",
+          "smart_discharge_voltage": "Tensão de parada de descarga usada quando o próximo dia é bom.",
+          "smart_hold_voltage": "Tensão de parada de descarga usada quando o próximo dia é ruim, alta o suficiente para a bateria não descarregar.",
+          "smart_good_conditions": "Condições de previsão consideradas um bom dia de carga."
+        }
       }
     }
   },
@@ -156,6 +188,22 @@
     }
   },
   "selector": {
+    "smart_good_conditions": { "options": {
+      "sunny": "Ensolarado",
+      "partlycloudy": "Parcialmente nublado",
+      "cloudy": "Nublado",
+      "windy": "Ventoso",
+      "windy-variant": "Ventoso e nublado",
+      "fog": "Neblina",
+      "rainy": "Chuvoso",
+      "pouring": "Chuva forte",
+      "lightning": "Raios",
+      "lightning-rainy": "Raios e chuva",
+      "snowy": "Neve",
+      "snowy-rainy": "Neve e chuva",
+      "hail": "Granizo",
+      "exceptional": "Excepcional"
+    } },
     "model": {
       "options": {
         "autodetect": "Detecção automática",
@@ -262,6 +310,34 @@
       }
     },
     "sensor": {
+      "smartdischargedecision": {
+        "name": "Decisão da Descarga Inteligente",
+        "state": {
+          "discharge": "Descarregar",
+          "hold": "Manter",
+          "disabled": "Desativado"
+        }
+      },
+      "smartdischargeforecast": {
+        "name": "Previsão da Descarga Inteligente",
+        "state": {
+          "sunny": "Ensolarado",
+          "partlycloudy": "Parcialmente nublado",
+          "cloudy": "Nublado",
+          "windy": "Ventoso",
+          "windy-variant": "Ventoso e nublado",
+          "fog": "Neblina",
+          "rainy": "Chuvoso",
+          "pouring": "Chuva forte",
+          "lightning": "Raios",
+          "lightning-rainy": "Raios e chuva",
+          "snowy": "Neve",
+          "snowy-rainy": "Neve e chuva",
+          "hail": "Granizo",
+          "exceptional": "Excepcional",
+          "clear-night": "Noite limpa"
+        }
+      },
       "absorbvoltage": { "name": "Tensão de absorção" },
       "batteryhighvoltage": { "name": "Tensão alta da bateria" },
       "absorbchargercurrent": { "name": "Corrente de carga de absorção" },
@@ -370,6 +446,7 @@
       "pv2chargerpower": { "name": "PV2 Potência" }
     },
     "switch": {
+      "smartdischarge": { "name": "Descarga Inteligente" },
       "chargerworkenable": { "name": "Carregador" },
       "batteryequalizationenable": { "name": "Carga de equalização" },
       "batteryequalizationimmediately": { "name": "Carga de equalização imediatamente" },

@@ -73,7 +73,8 @@ found online. Use it at your own risk.
 > [!CAUTION]
 > There are some modbus registers that cannot be reversed to their original value after being written and can have a
 > huge effect on the inverter operation, such as the calibration coefficients (these entities are disabled by default).
-> This integration **DOES NOT** write any information to the device via modbus unless you manually change an entity value.
+> This integration **DOES NOT** write any information to the device via modbus unless you manually change an entity value
+> or turn on the Smart Discharge switch (off by default).
 
 ## Installation
 
@@ -111,6 +112,27 @@ After a correct installation, your configuration directory should look like this
 5. Enter the required configuration for your serial setup (USB, TCP, or UDP).
 
 ![image](https://github.com/mukaschultze/ha-must-inverter/assets/13923364/92fa79ea-9e4a-4028-8563-9a4fa88a2cfa)
+
+### Smart Discharge (weather forecast based)
+
+Models exposing `Battery Stop Discharging Voltage` (register `20118`, PV1800/PH1800 family) get a **Smart Discharge**
+switch. While it is on, every 15 minutes the integration reads the forecast of the next solar charging day (the day of
+the next sunrise: in the evening that is tomorrow, after midnight it is today) from a Home Assistant weather entity and:
+
+- **Good forecast** (default: `sunny`): sets the voltage to the discharge voltage (default `51.4 V`), so the battery
+  powers the loads overnight and the sun charges it the next day.
+- **Bad forecast** (clouds, rain, snow, ...) or **no forecast available**: sets the voltage to the hold voltage
+  (default `54.4 V`), so the battery stays charged and the loads run from the grid.
+
+Configure it in the integration options (last step, "Smart battery discharge"): the weather entity (e.g. Met.no),
+both voltages and which forecast conditions count as a good day. Daily forecasts are used when available, otherwise
+the hourly forecast between 08:00 and 17:00 (at least half of the hours must be good). The register is only written
+when the value has to change. Turning the switch off leaves the last value in place. While the switch is on, manual
+changes to `Battery Stop Discharging Voltage` are overwritten on the next check.
+
+Two sensors show what it is doing: **Smart Discharge Decision** (`Discharge`, `Hold` or `Disabled`, with the target
+voltage, date and last error as attributes) and **Smart Discharge Forecast** (the forecast condition of the target
+day, with the date and whether it counts as a good day).
 
 <!---->
 

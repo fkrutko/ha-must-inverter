@@ -7,6 +7,7 @@ from homeassistant.core import callback
 
 from .const import DOMAIN, OPTIONS, Sensor
 from .__init__ import MustInverter
+from .smart_discharge import async_create_sensors as async_create_smart_discharge_sensors
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -21,6 +22,8 @@ async def async_setup_entry(hass, entry, async_add_entities):
         if sensor_info.platform == Platform.SENSOR:
             sensor = MustInverterSensor(inverter, sensor_info)
             entities.append(sensor)
+
+    entities.extend(async_create_smart_discharge_sensors(hass, entry, inverter))
 
     async_add_entities(entities)
     return True

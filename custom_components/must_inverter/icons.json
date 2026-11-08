@@ -83,6 +83,15 @@
             "remotereset": { "default": "mdi:restart" }
         },
         "sensor": {
+            "smartdischargedecision": {
+                "default": "mdi:battery-clock",
+                "state": {
+                    "discharge": "mdi:battery-arrow-down",
+                    "hold": "mdi:battery-lock",
+                    "disabled": "mdi:battery-off-outline"
+                }
+            },
+            "smartdischargeforecast": { "default": "mdi:weather-partly-cloudy" },
             "absorbchargercurrent": { "default": "mdi:current-dc" },
             "mpptstate": { "default": "mdi:solar-power" },
             "chargercurrent": { "default": "mdi:current-dc" },
@@ -122,6 +131,7 @@
             "mainscttphasecurrent": { "default": "mdi:current-ac" }
         },
         "switch": {
+            "smartdischarge": { "default": "mdi:weather-sunny-alert" },
             "batteryequalizationenable": { "default": "mdi:equalizer" },
             "batteryequalizationimmediately": { "default": "mdi:equalizer" },
             "invertersearchmodeenable": {

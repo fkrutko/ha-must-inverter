@@ -15,6 +15,34 @@ CONF_RECONNECT_DELAY = "reconnect_delay"
 CONF_RECONNECT_DELAY_MAX = "reconnect_delay_max"
 CONF_DEVICE_ID = "device_id"
 
+# Smart discharge (weather forecast based battery discharge control)
+CONF_SMART_WEATHER_ENTITY = "smart_weather_entity"
+CONF_SMART_DISCHARGE_VOLTAGE = "smart_discharge_voltage"
+CONF_SMART_HOLD_VOLTAGE = "smart_hold_voltage"
+CONF_SMART_GOOD_CONDITIONS = "smart_good_conditions"
+
+DEFAULT_SMART_DISCHARGE_VOLTAGE = 51.4
+DEFAULT_SMART_HOLD_VOLTAGE = 54.4
+DEFAULT_SMART_GOOD_CONDITIONS = ["sunny"]
+
+# All conditions a Home Assistant weather entity can report for a daytime forecast
+WEATHER_CONDITIONS = [
+    "sunny",
+    "partlycloudy",
+    "cloudy",
+    "windy",
+    "windy-variant",
+    "fog",
+    "rainy",
+    "pouring",
+    "lightning",
+    "lightning-rainy",
+    "snowy",
+    "snowy-rainy",
+    "hail",
+    "exceptional",
+]
+
 DEFAULT_SCAN_INTERVAL = 15
 DEFAULT_DEVICE_ID = 0x04
 

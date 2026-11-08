@@ -31,6 +31,14 @@ from .const import (
     CONF_RECONNECT_DELAY,
     CONF_RECONNECT_DELAY_MAX,
     CONF_DEVICE_ID,
+    CONF_SMART_WEATHER_ENTITY,
+    CONF_SMART_DISCHARGE_VOLTAGE,
+    CONF_SMART_HOLD_VOLTAGE,
+    CONF_SMART_GOOD_CONDITIONS,
+    DEFAULT_SMART_DISCHARGE_VOLTAGE,
+    DEFAULT_SMART_HOLD_VOLTAGE,
+    DEFAULT_SMART_GOOD_CONDITIONS,
+    WEATHER_CONDITIONS,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -95,6 +103,28 @@ MODBUS_SCHEMA = vol.Schema(
     }
 )
 
+SMART_DISCHARGE_SCHEMA = vol.Schema(
+    {
+        vol.Optional(CONF_SMART_WEATHER_ENTITY): selector({"entity": {"domain": "weather"}}),
+        vol.Required(CONF_SMART_DISCHARGE_VOLTAGE, default=DEFAULT_SMART_DISCHARGE_VOLTAGE): selector(
+            {"number": {"min": 40.0, "max": 60.0, "step": 0.1, "unit_of_measurement": "V", "mode": "box"}}
+        ),
+        vol.Required(CONF_SMART_HOLD_VOLTAGE, default=DEFAULT_SMART_HOLD_VOLTAGE): selector(
+            {"number": {"min": 40.0, "max": 60.0, "step": 0.1, "unit_of_measurement": "V", "mode": "box"}}
+        ),
+        vol.Required(CONF_SMART_GOOD_CONDITIONS, default=DEFAULT_SMART_GOOD_CONDITIONS): selector(
+            {
+                "select": {
+                    "mode": SelectSelectorMode.DROPDOWN,
+                    "multiple": True,
+                    "translation_key": CONF_SMART_GOOD_CONDITIONS,
+                    "options": WEATHER_CONDITIONS,
+                }
+            }
+        ),
+    }
+)
+
 
 # needs to be async, probably a bug in HA
 async def next_step(user_input):
@@ -109,7 +139,8 @@ CONFIG_FLOW: Mapping[str, SchemaFlowStep] = {
     "serial": SchemaFlowFormStep(schema=SERIAL_SCHEMA, next_step="modbus"),
     "tcp": SchemaFlowFormStep(schema=TCP_SCHEMA, next_step="modbus"),
     "udp": SchemaFlowFormStep(schema=UDP_SCHEMA, next_step="modbus"),
-    "modbus": SchemaFlowFormStep(schema=MODBUS_SCHEMA),
+    "modbus": SchemaFlowFormStep(schema=MODBUS_SCHEMA, next_step="smart_discharge"),
+    "smart_discharge": SchemaFlowFormStep(schema=SMART_DISCHARGE_SCHEMA),
 }
 
 OPTIONS_FLOW: Mapping[str, SchemaFlowStep] = {
